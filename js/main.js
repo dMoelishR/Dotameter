@@ -1,3 +1,5 @@
+/*eslint-env jquery, browser*/
+/*globals BigNumber */
 var user = [
 	{ "name" : "Cracker" , "id" : "76561197978275774" },
 	{ "name" : "Dortan" , "id" : "18230281" },
@@ -23,7 +25,7 @@ var records = {
 	"level" : {"v": 0, "name" : "" },
 	"tower_damage" : {"v": 0, "name" : "" },
 	"xp_per_min" : {"v": 0, "name" : "" }
-}
+};
 
 var heroes = null;
 var schnitt = {};
@@ -35,7 +37,7 @@ $(document).ready(function() {
 
 			for(var i = 0;i<user.length; i++) {
 				(function() {
-					var name = user[i]["name"];
+					var userName = user[i]["name"];
 					var id = user[i]["id"];
 
 					if(id.length >= 15) {
@@ -43,7 +45,7 @@ $(document).ready(function() {
 						var low = heeigh.minus("76561197960265728");
 						id = low.toJSON(); //Get 32Bit id!
 					}
-					$("#content").append('<h2>'+name+'</h2>');
+					$("#content").append('<h2>'+userName+'</h2>');
 					$("#content").append('<table>'+
 						'<thead>'+
 							'<tr>'+
@@ -69,7 +71,7 @@ $(document).ready(function() {
 							var matchCnt = 0;
 				        	for(var k=0;k<matches.length;k++) {
 				        		var match = matches[k];
-				        		if(match["lobby_type"] == 7 || match["lobby_type"] == 0 || match["lobby_type"] == 2) {
+				        		if(match["lobby_type"] === 7 || match["lobby_type"] === 0 || match["lobby_type"] === 2) {
 			        				ajax({ "request" : "getMatchInfos", "match_id" : match["match_id"] }, 
 			        					function(data) {
 			        						var game = data.result;
@@ -78,8 +80,8 @@ $(document).ready(function() {
 			        							var players = game["players"];
 				        						for(var j=0;j<players.length;j++) {
 				        							var player = players[j];
-				        							if(player["account_id"] == id) {
-				        								player["name"] = name;
+				        							if(player["account_id"] === id) {
+				        								player["name"] = userName;
 				        								player["kda_ration"] = getKDARation(player["kills"], player["deaths"], player["assists"]);
 				        								refreshRecords(player);
 				        								refreshSchnitt(player, matchCnt);
@@ -112,12 +114,12 @@ $(document).ready(function() {
 });
 
 function refreshSchnitt(player, matchCnt) {
-	if(typeof(schnitt[player["name"]]) == "undefined") {
+	if(typeof(schnitt[player["name"]]) === "undefined") {
 		schnitt[player["name"]] = {};
 	}
 	var pSchnitt = schnitt[player["name"]];
 	for(var i in records) {
-		if(typeof(pSchnitt[i]) == "undefined") {
+		if(typeof(pSchnitt[i]) === "undefined") {
 			pSchnitt[i] = player[i];
 		} else {
 			pSchnitt[i] = (pSchnitt[i]*(matchCnt-1)+player[i])/(matchCnt);
@@ -138,7 +140,7 @@ function refreshRecords(player) {
 
 function getHeroNameById(id) {
 	for(var i=0;i<heroes.length;i++) {
-		if(heroes[i]["id"] == id) {
+		if(heroes[i]["id"] === id) {
 			var locName = heroes[i]["localized_name"];
 			return locName;
 		}
@@ -147,7 +149,7 @@ function getHeroNameById(id) {
 
 function getHeroImgById(id) {
 	for(var i=0;i<heroes.length;i++) {
-		if(heroes[i]["id"] == id) {
+		if(heroes[i]["id"] === id) {
 			var img = "http://cdn.dota2.com/apps/dota2/images/heroes/"+heroes[i]["name"].replace("npc_dota_hero_", "")+"_sb.png";
 			return img;
 		}
@@ -177,12 +179,12 @@ function ajax(request, callback) {
 	    success:function(data)
         {
         	callback(data);
-        	if(request["request"] != "getAllgames") {
+        	if(request["request"] !== "getAllgames") {
         		localStorage.setItem(ident, JSON.stringify(data));
         	}
         	req--;
 			$("#loading").text("Loading... remaining requests: "+req);
-        	if(req==0) {
+        	if(req===0) {
         		finishAjax();
         	}
         }, error:function(e) {
